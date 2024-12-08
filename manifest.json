@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "EasyCars Data Extractor",
+    "version": "1.3",
+    "description": "Extracts vehicle information from EasyCars and posts it to Airtable.",
+    "permissions": [
+      "activeTab",
+      "scripting"
+    ],
+    "host_permissions": [
+      "https://api.airtable.com/*"
+    ],
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://my.easycars.net.au/app/Vehicles/Manage/*"],
+        "js": ["content.js"],
+        "run_at": "document_idle"
+      }
+    ]
+  }
+  

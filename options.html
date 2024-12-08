@@ -1,0 +1,53 @@
+<!-- options.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EasyCars Data Extractor - Options</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #status {
+        margin-top: 10px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Configure Airtable Settings</h2>
+    <label for="apiKey">Airtable API Key:</label>
+    <input type="text" id="apiKey" placeholder="Enter your Airtable API Key" />
+
+    <label for="baseId">Airtable Base ID:</label>
+    <input type="text" id="baseId" placeholder="Enter your Airtable Base ID" />
+
+    <label for="tableName">Airtable Table Name:</label>
+    <input
+      type="text"
+      id="tableName"
+      placeholder="Enter your Airtable Table Name"
+    />
+
+    <button id="saveBtn">Save</button>
+    <div id="status"></div>
+
+    <script src="options.js"></script>
+  </body>
+</html>
