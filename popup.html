@@ -1,59 +1,169 @@
-<!-- popup.html -->
 <!DOCTYPE html>
 <html>
   <head>
     <title>EasyCars Data Extractor</title>
     <style>
+      /* Reset some default styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
-        font-family: Arial, sans-serif;
-        width: 450px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        width: 650px;
         padding: 20px;
+        background-color: #f5f7fa;
+        color: #333;
       }
-      #extractBtn,
-      #postBtn {
-        padding: 10px 20px;
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50;
+      }
+
+      /* Button Container */
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      /* Button Styles */
+      .button {
+        flex: 1;
+        padding: 12px 20px;
         font-size: 16px;
+        border: none;
+        border-radius: 8px;
         cursor: pointer;
-        margin-right: 10px;
+        color: #fff;
+        transition: background-color 0.3s, transform 0.2s;
       }
-      #postBtn:disabled {
-        background-color: #ccc;
+
+      .button:disabled {
+        background-color: #95a5a6;
         cursor: not-allowed;
       }
+
+      /* Specific Button Colors */
+      #extractBtn {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+      }
+
+      #extractBtn:hover:not(:disabled) {
+        background: linear-gradient(45deg, #2980b9, #1f618d);
+        transform: translateY(-2px);
+      }
+
+      #extractPhotosBtn {
+        background: linear-gradient(45deg, #e67e22, #d35400);
+      }
+
+      #extractPhotosBtn:hover:not(:disabled) {
+        background: linear-gradient(45deg, #d35400, #a84300);
+        transform: translateY(-2px);
+      }
+
+      #postBtn {
+        background: linear-gradient(45deg, #2ecc71, #27ae60);
+      }
+
+      #postBtn:hover:not(:disabled) {
+        background: linear-gradient(45deg, #27ae60, #1e8449);
+        transform: translateY(-2px);
+      }
+
+      /* Status Message */
+      #status {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      #status.success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      #status.error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      /* Data Display */
       #data {
         margin-top: 20px;
-        max-height: 600px;
+        padding: 15px;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        max-height: 400px;
         overflow-y: auto;
       }
+
       .field {
-        margin-bottom: 10px;
+        margin-bottom: 12px;
       }
+
       .label {
         font-weight: bold;
+        color: #2c3e50;
       }
-      .photos {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+
+      .photos-container {
+        margin-top: 20px;
       }
+
       .photos img {
-        max-width: 100px;
-        max-height: 100px;
-        border: 1px solid #ccc;
-        padding: 2px;
+        max-width: 120px;
+        margin: 5px;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
       }
-      #status {
-        margin-top: 10px;
-        font-weight: bold;
+
+      .photos img:hover {
+        transform: scale(1.05);
       }
+
+      /* Scrollbar Styling for Data Display */
+      #data::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #data::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 8px;
+      }
+
+      #data::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 8px;
+      }
+
+      #data::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+      }
+
+   
     </style>
   </head>
   <body>
-    <h2>Vehicle Information</h2>
-    <button id="extractBtn">Extract Data</button>
-    <button id="postBtn" disabled>Post to Airtable</button>
-    <div id="status"></div>
+    <h2>EasyCars Data Extractor</h2>
+    <div class="button-container">
+      <button id="extractBtn" class="button">Extract Data</button>
+      <button id="extractPhotosBtn" class="button">Extract Photos</button>
+      <button id="postBtn" class="button" disabled>Post to Airtable</button>
+    </div>
     <div id="data"></div>
+    <div id="status"></div>
 
     <script src="popup.js"></script>
   </body>

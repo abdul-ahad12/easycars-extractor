@@ -3,6 +3,12 @@
 // Log when the content script is loaded
 console.log("EasyCars Data Extractor: Content script loaded.");
 
+// =====================
+// Configuration
+// =====================
+
+const BASE_URL = "https://my.easycars.net.au"; // Base URL to prepend to image paths
+
 /**
  * Utility function to find a form-group div by label text.
  * @param {string} labelText - The exact text of the label to search for.
@@ -119,6 +125,46 @@ function extractRadioValue(formGroup) {
 }
 
 /**
+ * Extracts the first 5 features from the Features list.
+ * @returns {string} - A comma-separated string of the first 5 features or 'N/A' if not found.
+ */
+function extractFeatures() {
+  const featuresContainer = document.querySelector(".stock-opts-list");
+  if (featuresContainer) {
+    const featureItems = featuresContainer.querySelectorAll(
+      "li.ng-scope span.ng-binding"
+    );
+    if (featureItems.length === 0) {
+      console.warn("EasyCars Data Extractor: No features found.");
+      return "N/A";
+    }
+
+    // Extract text from the first 5 features
+    const features = [];
+    for (let i = 0; i < Math.min(5, featureItems.length); i++) {
+      const featureText = featureItems[i].textContent.trim();
+      if (featureText) {
+        features.push(featureText);
+        console.log(
+          `EasyCars Data Extractor: Extracted feature "${featureText}".`
+        );
+      }
+    }
+
+    if (features.length === 0) {
+      console.warn("EasyCars Data Extractor: No valid features extracted.");
+      return "N/A";
+    }
+
+    const featuresString = features.join(", ");
+    console.log(`EasyCars Data Extractor: Features - "${featuresString}".`);
+    return featuresString;
+  }
+  console.warn("EasyCars Data Extractor: Features container not found.");
+  return "N/A";
+}
+
+/**
  * Extracts all required vehicle data fields.
  * @returns {Object} - An object containing the extracted vehicle data.
  */
@@ -162,6 +208,7 @@ function extractVehicleData() {
     Transmission: "N/A", // Added Transmission
     Condition: "N/A", // Added Condition
     "Fuel Type": "N/A", // Added Fuel Type
+    Features: "N/A", // Added Features
     // Add more fields here if necessary
   };
 
@@ -401,10 +448,56 @@ function extractVehicleData() {
     data["Fuel Type"] = extractDropdownValue(formGroup);
   }
 
+  // 39. Features (New Field)
+  data["Features"] = extractFeatures();
+
   // Add more fields here if necessary
 
   console.log("EasyCars Data Extractor: Extracted Vehicle Data:", data);
   return data;
+}
+
+/**
+ * Extracts all main stock photo URLs from the page.
+ * @returns {Array<string>} - An array of complete photo URLs.
+ */
+function extractPhotoUrls() {
+  console.log("EasyCars Data Extractor: Extracting photo URLs...");
+  const photoElements = document.querySelectorAll(
+    "#StockPhotosList img.img-responsive.pointer"
+  );
+  const photoUrls = [];
+
+  photoElements.forEach((img) => {
+    const relativePath = img.getAttribute("data-path");
+    if (relativePath) {
+      // Replace 'Thumbnail' with 'StockPhoto' in the URL path if necessary
+      // Adjust this replacement based on actual URL structure
+      const refactoredPath = relativePath.replace(
+        "/Thumbnail/",
+        "/StockPhoto/"
+      );
+      const mainPhotoUrl = new URL(refactoredPath, BASE_URL).href;
+      photoUrls.push(mainPhotoUrl);
+      console.log(
+        `EasyCars Data Extractor: Found photo URL "${mainPhotoUrl}".`
+      );
+    } else {
+      console.warn(
+        `EasyCars Data Extractor: data-path attribute not found for an image.`
+      );
+    }
+  });
+
+  if (photoUrls.length === 0) {
+    console.warn("EasyCars Data Extractor: No photos found.");
+  } else {
+    console.log(
+      `EasyCars Data Extractor: Extracted ${photoUrls.length} photo URLs.`
+    );
+  }
+
+  return photoUrls;
 }
 
 // Listen for messages from the popup or other extension components
@@ -419,6 +512,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ data: null, error: error.message });
     }
     // Indicate that the response will be sent asynchronously
+    return true;
+  }
+
+  if (request.action === "extractPhotos") {
+    console.log("EasyCars Data Extractor: Received 'extractPhotos' request.");
+    try {
+      const photoUrls = extractPhotoUrls();
+      sendResponse({ photos: photoUrls });
+    } catch (error) {
+      console.error("EasyCars Data Extractor: Error extracting photos:", error);
+      sendResponse({ photos: null, error: error.message });
+    }
     return true;
   }
 });
